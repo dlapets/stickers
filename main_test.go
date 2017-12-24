@@ -23,3 +23,22 @@ func TestWordsMatching(t *testing.T) {
 	sort.Strings(matching) // don't expect any particular order
 	assert.Equal(t, []string{"get", "height", "hi", "i"}, matching)
 }
+
+func BenchmarkWordsMatching_Simple(b *testing.B) {
+	dictionary := []string{"hi", "i", "you", "get", "height"}
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		main.WordsMatching("height", dictionary)
+	}
+}
+
+func BenchmarkWordsMatching_RealDictionary(b *testing.B) {
+	dictionary, err := main.LoadDictionary(main.DictionaryPath)
+	if err != nil {
+		b.Fatalf("cannot load dictionary: %s", err)
+	}
+	b.ResetTimer()
+	for n := 0; n < b.N; n++ {
+		main.WordsMatching("height", dictionary)
+	}
+}
