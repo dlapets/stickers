@@ -1,18 +1,36 @@
 package main
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
+	"strings"
 )
 
-const DictionaryPath = "dictionary.txt"
+const DictionaryPath = "data/dictionary.txt"
 
 func main() {
-	_, err := LoadDictionary(DictionaryPath)
+	target := strings.ToLower(strings.Join(os.Args[1:], ""))
+	if target == "" {
+		log.Panicf("no input")
+	}
+
+	dictionary, err := LoadDictionary(DictionaryPath)
 	if err != nil {
 		log.Panicf("failed to read dictionary: %s", err)
 	}
 
+	if results := WordsMatching(target, dictionary); len(results) != 0 {
+		fmt.Println("YOU CAN MAKE THE FOLLOWING WITH YOUR STICKER!!")
+		for _, result := range results {
+			fmt.Println(result)
+		}
+		os.Exit(0)
+	}
+
+	fmt.Println("SORRY NOT TODAY!!")
+	os.Exit(0)
 }
 
 func LoadDictionary(filename string) ([]string, error) {

@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const TestDictionaryPath = "test_fixtures/dictionary.txt"
+const TestDictionaryPath = "data/test_dictionary.txt"
 
 func TestLoadDictionary(t *testing.T) {
 	dictionary, err := main.LoadDictionary(TestDictionaryPath)
