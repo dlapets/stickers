@@ -35,3 +35,37 @@ func LoadDictionary(filename string) ([]string, error) {
 	}
 	return dictionary, nil
 }
+
+func WordsMatching(target string, dictionary []string) []string {
+	matching := []string{}
+	for _, word := range dictionary {
+		if wordContains(word, target) {
+			matching = append(matching, word)
+		}
+	}
+
+	return matching
+}
+
+func wordContains(word, target string) bool {
+	runeCounts := wordRuneCounts(target)
+	for _, letter := range word {
+		if remaining, ok := runeCounts[letter]; !ok || remaining <= 0 {
+			return false
+		}
+		runeCounts[letter]--
+	}
+	return true
+}
+
+func wordRuneCounts(word string) map[rune]int {
+	runeCounts := map[rune]int{}
+	for _, letter := range word {
+		if _, ok := runeCounts[letter]; ok {
+			runeCounts[letter]++
+		} else {
+			runeCounts[letter] = 1
+		}
+	}
+	return runeCounts
+}
