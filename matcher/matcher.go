@@ -6,6 +6,28 @@ type Matcher interface {
 	WordsMatching(string) []string
 }
 
+// reads a list of words split by newlines from a file
+func LoadDictionary(filename string) ([]string, error) {
+	dictionaryBytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+
+	dictionary := []string{}
+	lastOffset := 0
+	for currentOffset, b := range dictionaryBytes {
+		if b != byte('\n') {
+			continue
+		}
+		dictionary = append(
+			dictionary,
+			string(dictionaryBytes[lastOffset:currentOffset]),
+		)
+		lastOffset = currentOffset + 1
+	}
+	return dictionary, nil
+}
+
 type SimpleMatcher []string
 
 func (m SimpleMatcher) WordsMatching(target string) []string {
@@ -42,24 +64,59 @@ func wordRuneCounts(word string) map[rune]int {
 	return runeCounts
 }
 
-// reads a list of words split by newlines from a file
-func LoadDictionary(filename string) ([]string, error) {
-	dictionaryBytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
+type ConcurrentMatcher struct {
+	dictionary []string
+	goroutines int
+}
+
+func NewConcurrentMatcher(
+	dictionary []string,
+	goroutines int,
+) *ConcurrentMatcher {
+	if goroutines < 1 {
+		goroutines = 1
+	}
+	return &ConcurrentMatcher{
+		dictionary: dictionary,
+		goroutines: goroutines,
+	}
+}
+
+func (m *ConcurrentMatcher) WordsMatching(target string) []string {
+	wordsChan := make(chan string)
+	go func() {
+		for _, word := range m.dictionary {
+			wordsChan <- word
+		}
+		close(wordsChan)
+	}()
+
+	resultsChan := make(chan string)
+	doneChan := make(chan struct{})
+	for i := 0; i < m.goroutines; i++ {
+		go func() {
+			for word := range wordsChan {
+				if wordContains(word, target) {
+					resultsChan <- word
+				}
+			}
+			doneChan <- struct{}{}
+		}()
 	}
 
-	dictionary := []string{}
-	lastOffset := 0
-	for currentOffset, b := range dictionaryBytes {
-		if b != byte('\n') {
-			continue
+	matching := []string{}
+	running := m.goroutines
+	for {
+		select {
+		case word := <-resultsChan:
+			matching = append(matching, word)
+		case <-doneChan:
+			running--
 		}
-		dictionary = append(
-			dictionary,
-			string(dictionaryBytes[lastOffset:currentOffset]),
-		)
-		lastOffset = currentOffset + 1
+		if running == 0 {
+			break
+		}
 	}
-	return dictionary, nil
+
+	return matching
 }

@@ -1,6 +1,7 @@
 package matcher_test
 
 import (
+	"fmt"
 	"sort"
 	"testing"
 
@@ -37,6 +38,43 @@ func BenchmarkSimpleMatcher_WordsMatching_RealDictionary(b *testing.B) {
 	}
 	m := matcher.SimpleMatcher(dictionary)
 	benchmarkMatcher(m, "height", b)
+}
+
+func TestConcurrentMatcher_WordsMatching(t *testing.T) {
+	for goroutines := 0; goroutines < 3; goroutines++ {
+		t.Run(fmt.Sprintf("goroutines %d", goroutines), func(t *testing.T) {
+			m := matcher.NewConcurrentMatcher(
+				[]string{"hi", "i", "you", "get", "height"},
+				goroutines,
+			)
+			matching := m.WordsMatching("height")
+			sort.Strings(matching) // don't expect any particular order
+			assert.Equal(t, []string{"get", "height", "hi", "i"}, matching)
+		})
+	}
+}
+
+func BenchmarkConcurrentMatcher_WordsMatching_SimpleDictionary(b *testing.B) {
+	dictionary := []string{"hi", "i", "you", "get", "height"}
+	for i := 1; i <= 4; i++ {
+		b.Run(fmt.Sprintf("goroutines %d", i), func(b *testing.B) {
+			m := matcher.NewConcurrentMatcher(dictionary, i)
+			benchmarkMatcher(m, "height", b)
+		})
+	}
+}
+
+func BenchmarkConcurrentMatcher_WordsMatching_RealDictionary(b *testing.B) {
+	dictionary, err := matcher.LoadDictionary(RealDictionaryPath)
+	if err != nil {
+		b.Fatalf("cannot load dictionary: %s", err)
+	}
+	for i := 1; i <= 4; i++ {
+		b.Run(fmt.Sprintf("goroutines %d", i), func(b *testing.B) {
+			m := matcher.NewConcurrentMatcher(dictionary, i)
+			benchmarkMatcher(m, "height", b)
+		})
+	}
 }
 
 func benchmarkMatcher(m matcher.Matcher, w string, b *testing.B) {
