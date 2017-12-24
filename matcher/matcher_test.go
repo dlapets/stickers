@@ -25,12 +25,9 @@ func TestSimpleMatcher_WordsMatching(t *testing.T) {
 	assert.Equal(t, []string{"get", "height", "hi", "i"}, matching)
 }
 
-func BenchmarkSimpleMatcher_WordsMatching_Simple(b *testing.B) {
+func BenchmarkSimpleMatcher_WordsMatching_SimpleDictionary(b *testing.B) {
 	m := matcher.SimpleMatcher([]string{"hi", "i", "you", "get", "height"})
-	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
-		m.WordsMatching("height")
-	}
+	benchmarkMatcher(m, "height", b)
 }
 
 func BenchmarkSimpleMatcher_WordsMatching_RealDictionary(b *testing.B) {
@@ -39,8 +36,12 @@ func BenchmarkSimpleMatcher_WordsMatching_RealDictionary(b *testing.B) {
 		b.Fatalf("cannot load dictionary: %s", err)
 	}
 	m := matcher.SimpleMatcher(dictionary)
+	benchmarkMatcher(m, "height", b)
+}
+
+func benchmarkMatcher(m matcher.Matcher, w string, b *testing.B) {
 	b.ResetTimer()
 	for n := 0; n < b.N; n++ {
-		m.WordsMatching("height")
+		m.WordsMatching(w)
 	}
 }
