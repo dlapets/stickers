@@ -1,6 +1,11 @@
 package matcher
 
-import "io/ioutil"
+import (
+	"fmt"
+	"io/ioutil"
+	"sort"
+	"strings"
+)
 
 type Matcher interface {
 	WordsMatching(string) []string
@@ -41,7 +46,83 @@ func (m SimpleMatcher) WordsMatching(target string) []string {
 	return matching
 }
 
+func (m SimpleMatcher) MultiWordsMatching(target string) [][]string {
+	words := m.WordsMatching(target)
+
+	matching := [][]string{}
+	combinations := getCombinations(len(words))
+
+	for _, combo := range combinations {
+		word := maskWords(words, combo)
+		if wordContains(word, target) {
+			fmt.Printf("LOOKING FOR word = %s IN target = %s\n", word, target)
+
+			// TODO clean this up; sort is here for tests only
+			phrase := make([]string, len(combo))
+			for i, j := range combo {
+				phrase[i] = words[j]
+			}
+			sort.Strings(phrase)
+			matching = append(matching, phrase)
+		}
+	}
+
+	return matching
+}
+
+func maskWords(words []string, combo []int) string {
+	b := strings.Builder{}
+	for _, i := range combo {
+		b.WriteString(words[i])
+	}
+	return b.String()
+}
+
+func getCombinations(size int) [][]int {
+	combinations := [][]int{}
+	for i := 1; i <= size; i++ {
+		combinations = append(combinations, nChooseK(size, i)...)
+	}
+	return combinations
+}
+
+// TODO This is ugly, clean this up?
+func nChooseK(n, k int) [][]int {
+	combinations := [][]int{}
+
+	s := make([]int, k)
+	last := k - 1
+
+	var rc func(int, int) [][]int
+
+	rc = func(i, next int) [][]int {
+		for j := next; j < n; j++ {
+			s[i] = j
+			if i == last {
+				combinations = append(combinations, sliceCopy(s))
+			} else {
+				rc(i+1, j+1)
+			}
+		}
+		return combinations
+	}
+
+	return rc(0, 0)
+}
+
+func sliceCopy(s []int) []int {
+	a := make([]int, len(s))
+	for i, v := range s {
+		a[i] = v
+	}
+	return a
+}
+
 func wordContains(word, target string) bool {
+	if len(word) > len(target) {
+		fmt.Println("That's too long\n")
+		return false
+	}
 	runeCounts := wordRuneCounts(target)
 	for _, letter := range word {
 		if remaining, ok := runeCounts[letter]; !ok || remaining <= 0 {
@@ -62,61 +143,4 @@ func wordRuneCounts(word string) map[rune]int {
 		}
 	}
 	return runeCounts
-}
-
-type ConcurrentMatcher struct {
-	dictionary []string
-	goroutines int
-}
-
-func NewConcurrentMatcher(
-	dictionary []string,
-	goroutines int,
-) *ConcurrentMatcher {
-	if goroutines < 1 {
-		goroutines = 1
-	}
-	return &ConcurrentMatcher{
-		dictionary: dictionary,
-		goroutines: goroutines,
-	}
-}
-
-func (m *ConcurrentMatcher) WordsMatching(target string) []string {
-	wordsChan := make(chan string)
-	go func() {
-		for _, word := range m.dictionary {
-			wordsChan <- word
-		}
-		close(wordsChan)
-	}()
-
-	resultsChan := make(chan string)
-	doneChan := make(chan struct{})
-	for i := 0; i < m.goroutines; i++ {
-		go func() {
-			for word := range wordsChan {
-				if wordContains(word, target) {
-					resultsChan <- word
-				}
-			}
-			doneChan <- struct{}{}
-		}()
-	}
-
-	matching := []string{}
-	running := m.goroutines
-	for {
-		select {
-		case word := <-resultsChan:
-			matching = append(matching, word)
-		case <-doneChan:
-			running--
-		}
-		if running == 0 {
-			break
-		}
-	}
-
-	return matching
 }

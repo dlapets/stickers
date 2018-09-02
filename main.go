@@ -24,7 +24,7 @@ func main() {
 
 	m := matcher.SimpleMatcher(dictionary)
 
-	if results := m.WordsMatching(target); len(results) != 0 {
+	if results := m.MultiWordsMatching(target); len(results) != 0 {
 		fmt.Println("YOU CAN MAKE THE FOLLOWING WITH YOUR STICKER!!")
 		for _, result := range results {
 			fmt.Println(result)
