@@ -24,13 +24,27 @@ func LoadDictionary(filename string) ([]string, error) {
 		if b != byte('\n') {
 			continue
 		}
-		dictionary = append(
-			dictionary,
-			string(dictionaryBytes[lastOffset:currentOffset]),
-		)
+		word := string(dictionaryBytes[lastOffset:currentOffset])
+		if bullshit(word) {
+			fmt.Printf("WHAT THE HELL IS A %s??\n", word)
+		} else {
+			dictionary = append(dictionary, word)
+		}
 		lastOffset = currentOffset + 1
 	}
 	return dictionary, nil
+}
+
+func bullshit(word string) bool {
+	if len(word) == 1 {
+		switch word {
+		case "a", "i":
+			return false
+		default:
+			return true
+		}
+	}
+	return false
 }
 
 type SimpleMatcher []string
@@ -48,14 +62,16 @@ func (m SimpleMatcher) WordsMatching(target string) []string {
 
 func (m SimpleMatcher) MultiWordsMatching(target string) [][]string {
 	words := m.WordsMatching(target)
+	fmt.Printf("WORDS MATCHING ARE %v\n", words)
 
 	matching := [][]string{}
 	combinations := getCombinations(len(words))
+	fmt.Printf("GOT COMBINATIONS\n")
 
-	for _, combo := range combinations {
+	for combo := range combinations {
 		word := maskWords(words, combo)
 		if wordContains(word, target) {
-			fmt.Printf("LOOKING FOR word = %s IN target = %s\n", word, target)
+			//fmt.Printf("LOOKING FOR word = %s IN target = %s\n", word, target)
 
 			// TODO clean this up; sort is here for tests only
 			phrase := make([]string, len(combo))
@@ -63,6 +79,7 @@ func (m SimpleMatcher) MultiWordsMatching(target string) [][]string {
 				phrase[i] = words[j]
 			}
 			sort.Strings(phrase)
+			fmt.Printf("HOW ABOUT %v\n", phrase)
 			matching = append(matching, phrase)
 		}
 	}
@@ -78,11 +95,18 @@ func maskWords(words []string, combo []int) string {
 	return b.String()
 }
 
-func getCombinations(size int) [][]int {
-	combinations := [][]int{}
-	for i := 1; i <= size; i++ {
-		combinations = append(combinations, nChooseK(size, i)...)
-	}
+func getCombinations(size int) <-chan []int {
+	combinations := make(chan []int)
+
+	go func() {
+		for i := 1; i <= size; i++ {
+			for _, combo := range nChooseK(size, i) {
+				combinations <- combo
+			}
+		}
+		close(combinations)
+	}()
+
 	return combinations
 }
 
@@ -120,7 +144,7 @@ func sliceCopy(s []int) []int {
 
 func wordContains(word, target string) bool {
 	if len(word) > len(target) {
-		fmt.Println("That's too long\n")
+		//fmt.Println("That's too long\n")
 		return false
 	}
 	runeCounts := wordRuneCounts(target)
