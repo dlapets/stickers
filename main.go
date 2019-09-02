@@ -9,7 +9,7 @@ import (
 	"github.com/dlapets/stickers/matcher"
 )
 
-const DictionaryPath = "data/dictionary.txt"
+const DictionaryPath = "data/celine.txt"
 
 func main() {
 	target := strings.ToLower(strings.Join(os.Args[1:], ""))
