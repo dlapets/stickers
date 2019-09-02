@@ -22,7 +22,7 @@ func main() {
 		log.Panicf("failed to read dictionary: %s", err)
 	}
 
-	m := matcher.SimpleMatcher(dictionary)
+	m := matcher.NewSimpleMatcher(dictionary)
 
 	if results := m.MultiWordsMatching(target); len(results) != 0 {
 		fmt.Println("YOU CAN MAKE THE FOLLOWING WITH YOUR STICKER!!")

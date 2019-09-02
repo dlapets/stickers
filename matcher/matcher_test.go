@@ -19,7 +19,7 @@ func TestLoadDictionary(t *testing.T) {
 }
 
 func TestSimpleMatcher_MultiWordsMatching(t *testing.T) {
-	m := matcher.SimpleMatcher([]string{"hi", "there", "you"})
+	m := matcher.NewSimpleMatcher([]string{"hi", "there", "you"})
 	matching := m.MultiWordsMatching("a hi youthere zzz")
 
 	expectedPhrases := [][]string{
@@ -38,14 +38,14 @@ func TestSimpleMatcher_MultiWordsMatching(t *testing.T) {
 }
 
 func TestSimpleMatcher_WordsMatching(t *testing.T) {
-	m := matcher.SimpleMatcher([]string{"hi", "i", "you", "get", "height"})
+	m := matcher.NewSimpleMatcher([]string{"hi", "i", "you", "get", "height"})
 	matching := m.WordsMatching("height")
 	sort.Strings(matching) // don't expect any particular order
 	assert.Equal(t, []string{"get", "height", "hi", "i"}, matching)
 }
 
 func BenchmarkSimpleMatcher_WordsMatching_SimpleDictionary(b *testing.B) {
-	m := matcher.SimpleMatcher([]string{"hi", "i", "you", "get", "height"})
+	m := matcher.NewSimpleMatcher([]string{"hi", "i", "you", "get", "height"})
 	benchmarkMatcher(m, "height", b)
 }
 
@@ -54,7 +54,7 @@ func BenchmarkSimpleMatcher_WordsMatching_RealDictionary(b *testing.B) {
 	if err != nil {
 		b.Fatalf("cannot load dictionary: %s", err)
 	}
-	m := matcher.SimpleMatcher(dictionary)
+	m := matcher.NewSimpleMatcher(dictionary)
 	benchmarkMatcher(m, "height", b)
 }
 
