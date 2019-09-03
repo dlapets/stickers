@@ -57,21 +57,6 @@ func copySlice(s []int) []int {
 	return a
 }
 
-func wordContains(word, target string) bool {
-	if len(word) > len(target) {
-		//fmt.Println("That's too long\n")
-		return false
-	}
-	runeCounts := wordRuneCounts(target)
-	for _, letter := range word {
-		if remaining, ok := runeCounts[letter]; !ok || remaining <= 0 {
-			return false
-		}
-		runeCounts[letter]--
-	}
-	return true
-}
-
 func wordRuneCounts(word string) map[rune]int {
 	runeCounts := map[rune]int{}
 	for _, letter := range word {

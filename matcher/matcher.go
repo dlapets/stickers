@@ -47,28 +47,55 @@ func bullshit(word string) bool {
 }
 
 type SimpleMatcher struct {
-	dict []string
+	dict  []string
+	cache map[string]map[string]bool
 }
 
 func NewSimpleMatcher(dict []string) *SimpleMatcher {
 	return &SimpleMatcher{
-		dict: dict,
+		dict:  dict,
+		cache: map[string]map[string]bool{},
 	}
 }
 
-func (m SimpleMatcher) WordsMatching(target string) []string {
+func (m *SimpleMatcher) WordsMatching(givenWord string) []string {
 	matching := []string{}
 	for _, word := range m.dict {
-		if wordContains(word, target) {
+		if m.wordContains(word, givenWord) {
 			matching = append(matching, word)
 		}
 	}
-
 	return matching
 }
 
-func (m SimpleMatcher) MultiWordsMatching(target string) [][]string {
-	words := m.WordsMatching(target)
+func (m *SimpleMatcher) wordContains(word, givenWord string) bool {
+	if _, ok := m.cache[word]; !ok {
+		m.cache[word] = map[string]bool{}
+	}
+	if _, ok := m.cache[word][givenWord]; !ok {
+		m.cache[word][givenWord] = m.wordContainsUncached(word, givenWord)
+	}
+	return m.cache[word][givenWord]
+
+}
+
+func (m *SimpleMatcher) wordContainsUncached(word, givenWord string) bool {
+	if len(word) > len(givenWord) {
+		//fmt.Println("That's too long\n")
+		return false
+	}
+	runeCounts := wordRuneCounts(givenWord)
+	for _, letter := range word {
+		if remaining, ok := runeCounts[letter]; !ok || remaining <= 0 {
+			return false
+		}
+		runeCounts[letter]--
+	}
+	return true
+}
+
+func (m *SimpleMatcher) MultiWordsMatching(givenWord string) [][]string {
+	words := m.WordsMatching(givenWord)
 	fmt.Printf("WORDS MATCHING ARE %v\n", words)
 
 	matching := [][]string{}
@@ -77,8 +104,8 @@ func (m SimpleMatcher) MultiWordsMatching(target string) [][]string {
 
 	for combo := range combinations {
 		word := maskWords(words, combo)
-		if wordContains(word, target) {
-			//fmt.Printf("LOOKING FOR word = %s IN target = %s\n", word, target)
+		if m.wordContains(word, givenWord) {
+			//fmt.Printf("LOOKING FOR word = %s IN givenWord = %s\n", word, givenWord)
 
 			// TODO clean this up; sort is here for tests only
 			phrase := make([]string, len(combo))
