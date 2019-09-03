@@ -6,20 +6,13 @@ import (
 
 	"github.com/dlapets/stickers/matcher"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 const TestDictionaryPath = "../data/test_dictionary.txt"
 const RealDictionaryPath = "../data/dictionary.txt"
 
-func TestLoadDictionary(t *testing.T) {
-	dictionary, err := matcher.LoadDictionary(TestDictionaryPath)
-	require.NoError(t, err)
-	assert.Equal(t, []string{"hell", "hello", "help", "well"}, dictionary)
-}
-
 func TestSimpleMatcher_MultiWordsMatching(t *testing.T) {
-	m := matcher.NewSimpleMatcher([]string{"hi", "there", "you"})
+	m := matcher.NewSimpleMatcher(matcher.NewDictionary([]string{"hi", "there", "you"}))
 	matching := m.MultiWordsMatching("a hi youthere zzz")
 
 	expectedPhrases := [][]string{
@@ -38,14 +31,18 @@ func TestSimpleMatcher_MultiWordsMatching(t *testing.T) {
 }
 
 func TestSimpleMatcher_WordsMatching(t *testing.T) {
-	m := matcher.NewSimpleMatcher([]string{"hi", "i", "you", "get", "height"})
+	m := matcher.NewSimpleMatcher(
+		matcher.NewDictionary([]string{"hi", "i", "you", "get", "height"}),
+	)
 	matching := m.WordsMatching("height")
 	sort.Strings(matching) // don't expect any particular order
 	assert.Equal(t, []string{"get", "height", "hi", "i"}, matching)
 }
 
 func BenchmarkSimpleMatcher_WordsMatching_SimpleDictionary(b *testing.B) {
-	m := matcher.NewSimpleMatcher([]string{"hi", "i", "you", "get", "height"})
+	m := matcher.NewSimpleMatcher(
+		matcher.NewDictionary([]string{"hi", "i", "you", "get", "height"}),
+	)
 	benchmarkMatcher(m, "height", b)
 }
 

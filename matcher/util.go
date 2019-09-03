@@ -1,6 +1,9 @@
 package matcher
 
-import "strings"
+import (
+	"strconv"
+	"strings"
+)
 
 func maskWords(words []string, combo []int) string {
 	b := strings.Builder{}
@@ -67,4 +70,16 @@ func wordRuneCounts(word string) map[rune]int {
 		}
 	}
 	return runeCounts
+}
+
+func wordHash(word string) string {
+	rc := wordRuneCounts(word)
+	b := strings.Builder{}
+	for r, c := range rc {
+		b.WriteRune(r)
+		b.WriteRune(':')
+		b.WriteString(strconv.Itoa(c))
+		b.WriteRune(';')
+	}
+	return b.String()
 }
