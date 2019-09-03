@@ -1,7 +1,7 @@
 package matcher
 
 import (
-	"strconv"
+	"sort"
 	"strings"
 )
 
@@ -62,24 +62,32 @@ func copySlice(s []int) []int {
 
 func wordRuneCounts(word string) map[rune]int {
 	runeCounts := map[rune]int{}
-	for _, letter := range word {
-		if _, ok := runeCounts[letter]; ok {
-			runeCounts[letter]++
+	for _, r := range word {
+		if _, ok := runeCounts[r]; ok {
+			runeCounts[r]++
 		} else {
-			runeCounts[letter] = 1
+			runeCounts[r] = 1
 		}
 	}
+
 	return runeCounts
 }
 
 func wordHash(word string) string {
 	rc := wordRuneCounts(word)
+
+	runes := []rune{} //TODO use runes here ...
+	for r := range rc {
+		runes = append(runes, r)
+	}
+
+	sort.Slice(runes, func(i, j int) bool { return runes[i] < runes[j] })
+
 	b := strings.Builder{}
-	for r, c := range rc {
-		b.WriteRune(r)
-		b.WriteRune(':')
-		b.WriteString(strconv.Itoa(c))
-		b.WriteRune(';')
+	for _, r := range runes {
+		for i := 0; i < rc[r]; i++ {
+			b.WriteRune(r)
+		}
 	}
 	return b.String()
 }
