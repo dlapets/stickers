@@ -91,3 +91,24 @@ func wordHash(word string) string {
 	}
 	return b.String()
 }
+
+// gets a new word hash; rhs expected to be subset of lhs.
+// TODO this can be more efficient
+func wordHashDiff(lhs, rhs string) string {
+	lhsCounts := wordRuneCounts(lhs)
+	//fmt.Println(lhsCounts)
+	for _, r := range rhs {
+		lhsCounts[r]--
+	}
+	//fmt.Println(lhsCounts)
+
+	b := strings.Builder{}
+	for r, count := range lhsCounts {
+		for i := 0; i < count; i++ {
+			b.WriteRune(r)
+		}
+	}
+	res := wordHash(b.String())
+	//fmt.Printf("wordHashDiff: %s - %s = %s\n", lhs, rhs, res)
+	return res
+}

@@ -37,4 +37,20 @@ func TestWordTree_FindMany(t *testing.T) {
 	}
 
 	require.Equal(t, expected, tree.FindAll("shitass"))
+
+	//tree.FindAllGroups("shitasszzz")
+
+	tree.FindAllGroups2("shitassztoryas")
+}
+
+func TestWordTree_Whatever(t *testing.T) {
+	tree := matcher.NewWordTree()
+	dict, err := matcher.LoadDictionary("../data/celine.txt")
+	require.NoError(t, err)
+
+	for word := range dict.Words() {
+		tree.Add(word)
+	}
+
+	tree.FindAllGroups2("iiiiiiii")
 }
