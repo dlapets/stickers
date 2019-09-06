@@ -1,4 +1,4 @@
-package matcher
+package internal
 
 type WordTree struct {
 	children map[rune]*WordTree

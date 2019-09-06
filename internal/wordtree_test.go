@@ -1,14 +1,14 @@
-package matcher_test
+package internal_test
 
 import (
 	"testing"
 
-	"github.com/dlapets/stickers/matcher"
+	"github.com/dlapets/stickers/internal"
 	"github.com/stretchr/testify/require"
 )
 
 func TestWordTree_Add_Find(t *testing.T) {
-	tree := matcher.NewWordTree()
+	tree := internal.NewWordTree()
 
 	tree.Add("help")
 	require.True(t, tree.Find("help"))
@@ -23,7 +23,7 @@ func TestWordTree_Add_Find(t *testing.T) {
 }
 
 func TestWordTree_Words(t *testing.T) {
-	tree := matcher.NewWordTree()
+	tree := internal.NewWordTree()
 	tree.Add("shit")
 	tree.Add("hist")
 	tree.Add("history")
@@ -40,7 +40,7 @@ func TestWordTree_Words(t *testing.T) {
 }
 
 func TestWordTree_WordCombos(t *testing.T) {
-	tree := matcher.NewWordTree()
+	tree := internal.NewWordTree()
 	tree.Add("shit")
 	tree.Add("hist")
 	tree.Add("history")

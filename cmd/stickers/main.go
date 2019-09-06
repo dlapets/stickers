@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dlapets/stickers/matcher"
+	"github.com/dlapets/stickers/internal"
 )
 
 const DictionaryPath = "data/celine.txt"
@@ -19,25 +19,23 @@ func main() {
 		log.Panicf("no input")
 	}
 
-	words, err := matcher.LoadWords(DictionaryPath)
+	words, err := internal.LoadWords(DictionaryPath)
 	if err != nil {
 		log.Panicf("failed to read dictionary: %s", err)
 	}
 
-	wordTree := matcher.NewWordTree()
+	wordTree := internal.NewWordTree()
 	for _, word := range words {
 		wordTree.Add(word)
 	}
 
 	if results := wordTree.WordCombos(target); len(results) != 0 {
-		fmt.Println("You can make the following with your sticker!")
 		for _, result := range results {
 			fmt.Println(result)
 		}
-		fmt.Println("Have fun!")
 		os.Exit(0)
 	}
 
-	fmt.Println("Doesn't look like you can make anything with that sticker!")
+	log.Println("Doesn't look like you can make anything with that sticker!")
 	os.Exit(0)
 }
