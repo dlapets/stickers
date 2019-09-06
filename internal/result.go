@@ -6,41 +6,39 @@ import (
 )
 
 type result struct {
-	valid    bool
 	hash     string
 	words    []string
 	children []*result
 }
 
-var noResult = &result{} // not nil, not valid
-
-func (r *result) String() string {
+func (res *result) String() string {
 	return fmt.Sprintf(
-		"[result valid:%5t, words:%s, hash:%s, children: %s]",
-		r.valid,
-		r.words,
-		r.hash,
-		r.children,
+		"[result words:%s, hash:%s, children: %s]",
+		res.words,
+		res.hash,
+		res.children,
 	)
 }
 
 func newResult(words []string) *result {
-	if len(words) == 0 { // TODO get rid of panic
-		log.Panicf("there's no words on it!")
+	var hash string
+	if len(words) > 0 {
+		// TODO try to find a way to avoid recalculating the hash here.
+		hash = wordHash(words[0])
+	} else {
+		log.Printf("creating result from empty word list")
 	}
 	return &result{
-		valid:    true,
-		hash:     wordHash(words[0]), // TODO don't recalculate hash here
+		hash:     hash,
 		words:    words,
 		children: []*result{},
 	}
 }
 
-func (r *result) shallowCopy() *result {
+func (res *result) shallowCopy() *result {
 	return &result{
-		valid:    r.valid,
-		hash:     r.hash,
-		words:    r.words,
+		hash:     res.hash,
+		words:    res.words,
 		children: []*result{}, // doesn't get copied
 	}
 }
