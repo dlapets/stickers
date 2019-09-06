@@ -20,57 +20,45 @@ func bullshit(word string) bool {
 	return false
 }
 
-func wordRuneCounts(word string) map[rune]int {
-	runeCounts := map[rune]int{}
-	for _, r := range word {
-		if _, ok := runeCounts[r]; ok {
-			runeCounts[r]++
-		} else {
-			runeCounts[r] = 1
-		}
-	}
-
-	return runeCounts
+func wordHash(word string) string {
+	return wordHashDiff(word, "")
 }
 
-func wordHash(word string) string {
-	rc := wordRuneCounts(word)
+// gets a new word hash; rhs expected to be subset of lhs.
+// TODO this can be more efficient
+func wordHashDiff(lhs, rhs string) string {
+	runeCounts := wordRuneCounts(lhs)
 
-	runes := []rune{} //TODO use runes here ...
-	for r := range rc {
-		runes = append(runes, r)
+	// subtract rhs
+	for _, r := range rhs {
+		runeCounts[r]--
 	}
 
+	// put all the runes in order
+	runes := []rune{}
+	for r, count := range runeCounts {
+		if count > 0 {
+			runes = append(runes, r)
+		}
+	}
 	sort.Slice(runes, func(i, j int) bool { return runes[i] < runes[j] })
 
+	// write to string
 	b := strings.Builder{}
 	for _, r := range runes {
-		for i := 0; i < rc[r]; i++ {
+		for i := 0; i < runeCounts[r]; i++ {
 			b.WriteRune(r)
 		}
 	}
 	return b.String()
 }
 
-// gets a new word hash; rhs expected to be subset of lhs.
-// TODO this can be more efficient
-func wordHashDiff(lhs, rhs string) string {
-	lhsCounts := wordRuneCounts(lhs)
-	//fmt.Println(lhsCounts)
-	for _, r := range rhs {
-		lhsCounts[r]--
+func wordRuneCounts(word string) map[rune]int {
+	runeCounts := map[rune]int{}
+	for _, r := range word {
+		runeCounts[r]++
 	}
-	//fmt.Println(lhsCounts)
-
-	b := strings.Builder{}
-	for r, count := range lhsCounts {
-		for i := 0; i < count; i++ {
-			b.WriteRune(r)
-		}
-	}
-	res := wordHash(b.String())
-	//fmt.Printf("wordHashDiff: %s - %s = %s\n", lhs, rhs, res)
-	return res
+	return runeCounts
 }
 
 // Helper func for recursive printing: pads left depending on value of level.
