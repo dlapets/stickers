@@ -118,28 +118,32 @@ func (t *WordTree) WordCombos(givenWord string) [][]string {
 	knownSolutions := map[string]*result{}
 	givenWordHash := wordHash(givenWord)
 
-	var fillSubresults func(int, string, *result)
-	fillSubresults = func(level int, originalHash string, currentResult *result) {
-		hashDiff := wordHashDiff(originalHash, currentResult.hash)
-
-		if knownSolution, ok := knownSolutions[hashDiff]; ok {
-			currentResult.children = []*result{knownSolution.shallowCopy()}
-		} else {
-			currentResult.children = findAll(level+1, t, []rune(hashDiff))
-		}
-
-		for _, child := range currentResult.children {
-			if _, ok := knownSolutions[child.hash]; !ok {
-				knownSolutions[child.hash] = child.shallowCopy()
-			}
-			fillSubresults(level+1, hashDiff, child)
-		}
-	}
-
 	for _, newResult := range findAll(0, t, []rune(givenWordHash)) {
 		knownSolutions[newResult.hash] = newResult
-		fillSubresults(0, givenWordHash, newResult)
+		t.fillSubresults(0, givenWordHash, newResult, knownSolutions)
 	}
 
 	return summarize(knownSolutions)
+}
+
+func (t *WordTree) fillSubresults(
+	level int,
+	originalHash string,
+	currentResult *result,
+	knownSolutions map[string]*result,
+) {
+	hashDiff := wordHashDiff(originalHash, currentResult.hash)
+
+	if knownSolution, ok := knownSolutions[hashDiff]; ok {
+		currentResult.children = []*result{knownSolution.shallowCopy()}
+	} else {
+		currentResult.children = findAll(level+1, t, []rune(hashDiff))
+	}
+
+	for _, child := range currentResult.children {
+		if _, ok := knownSolutions[child.hash]; !ok {
+			knownSolutions[child.hash] = child.shallowCopy()
+		}
+		t.fillSubresults(level+1, hashDiff, child, knownSolutions)
+	}
 }
