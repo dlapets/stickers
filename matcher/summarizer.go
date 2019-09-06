@@ -2,12 +2,10 @@ package matcher
 
 import (
 	"fmt"
-	"log"
 	"sort"
 )
 
 func summarize(results map[string]*result) [][]string {
-	log.Println("SUMMARIZED RESULTS:")
 	return (&summarizer{}).updateCombos(results)
 }
 
@@ -30,7 +28,6 @@ func (s *summarizer) updateCombos(results map[string]*result) [][]string {
 		k := fmt.Sprintf("%s", combo)
 		if _, ok := deduper[k]; !ok {
 			deduper[k] = struct{}{}
-			log.Println(k)
 			dedupedCombos = append(dedupedCombos, combo)
 		}
 	}

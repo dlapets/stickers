@@ -74,7 +74,7 @@ func (t *WordTree) Words(givenWord string) []string {
 }
 
 func findAll(level int, cur *WordTree, givenRunes []rune) []*result {
-	//lprintf(level, "findAll: called with level: %d, remainderRunes: %s, givenRunes: %s\n", level, string(remainderRunes), string(givenRunes))
+	//lprintf(level, "findAll: called with level: %d, givenRunes: %s\n", level, string(givenRunes))
 
 	found := []*result{}
 
@@ -95,7 +95,7 @@ func findAll(level int, cur *WordTree, givenRunes []rune) []*result {
 		if next, ok := cur.children[r]; ok {
 			// Add all words found in subtrees
 			nextRunes := givenRunes[i+1:]
-			//lprintf(level, "findAll: rune: %s: recursing with remainderRunes: %s, nextRunes: %s\n", string(r), string(nextRunes))
+			//lprintf(level, "findAll: rune: %s: recursing with nextRunes: %s\n", string(r), string(nextRunes))
 			newFound := findAll(level+1, next, nextRunes)
 			found = append(found, newFound...)
 		} else {

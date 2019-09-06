@@ -1,17 +1,11 @@
 package matcher_test
 
 import (
-	"log"
 	"testing"
 
-	"github.com/adjust/backend/core/logger"
 	"github.com/dlapets/stickers/matcher"
 	"github.com/stretchr/testify/require"
 )
-
-func init() {
-	log.SetOutput(logger.NewFileWriter("./test.log"))
-}
 
 func TestWordTree_Add_Find(t *testing.T) {
 	tree := matcher.NewWordTree()
