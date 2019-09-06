@@ -1,12 +1,5 @@
 package matcher
 
-import (
-	"fmt"
-	"log"
-	"sort"
-	"strings"
-)
-
 type WordTree struct {
 	children map[rune]*WordTree
 	words    []string
@@ -18,147 +11,66 @@ func NewWordTree() *WordTree {
 	}
 }
 
+// String returns a string representation of the tree. Note that this may span
+// multiple lines.
+func (t *WordTree) String() string {
+	return t.draw("root", 0)
+}
+
+func (t *WordTree) draw(label string, level int) string {
+	s := lsprintf(level, "%s words: %s\n", label, t.words)
+	for r, child := range t.children {
+		s += child.draw(string(r), level+1)
+	}
+	return s
+}
+
+// Add inserts word into the tree.
+// TODO handle duplicates!!
 func (t *WordTree) Add(word string) {
-	//log.Println("add called:", word)
 	if len(word) == 0 {
 		return
 	}
 
+	// Create subnodes and until every rune is accounted for.
 	curTree := t
 	for _, r := range wordHash(word) {
-		//log.Println("add rune:", string(r))
-
-		// Create child if it doesn't exist
 		if _, ok := curTree.children[r]; !ok {
 			curTree.children[r] = NewWordTree()
 		}
-
 		curTree = curTree.children[r]
 	}
-	//log.Println("append", word)
+
+	// Add the word to the last subnode.
 	curTree.words = append(curTree.words, word)
 }
 
-func (t *WordTree) Find(word string) []string {
+// Find returns true if word is in the tree
+func (t *WordTree) Find(givenWord string) bool {
 	curTree := t
-	for _, r := range wordHash(word) {
-		//log.Println("find rune:", string(r))
-
+	for _, r := range wordHash(givenWord) {
 		// If there's no child that means it was not found!
 		if _, ok := curTree.children[r]; !ok {
-			//log.Println("not found:", word)
-			return nil
+			return false
 		}
-
 		curTree = curTree.children[r]
 	}
-
-	return curTree.words
+	for _, word := range curTree.words {
+		if word == givenWord {
+			return true
+		}
+	}
+	return false
 }
 
-func (t *WordTree) FindAllGroups2(givenWord string) {
-	knownSolutions := map[string]*result{}
-	givenWordHash := wordHash(givenWord)
-
-	var fillSubresults func(int, string, *result)
-	fillSubresults = func(level int, originalHash string, currentResult *result) {
-		if currentResult.valid == false {
-			return
-		}
-
-		hashDiff := wordHashDiff(originalHash, currentResult.hash)
-
-		if knownSolution, ok := knownSolutions[hashDiff]; ok {
-			currentResult.children = []*result{knownSolution.shallowCopy()}
-		} else {
-			currentResult.children = findAll(level+1, t, []rune(hashDiff))
-		}
-
-		for _, child := range currentResult.children {
-			if _, ok := knownSolutions[child.hash]; !ok {
-				knownSolutions[child.hash] = child.shallowCopy()
-			}
-			fillSubresults(level+1, hashDiff, child)
-		}
-	}
-
-	for _, newResult := range findAll(0, t, []rune(givenWordHash)) {
-		knownSolutions[newResult.hash] = newResult
-		fillSubresults(0, givenWordHash, newResult)
-	}
-
-	log.Println("KNOWN SOLUTIONS:")
-	resultsToPrint := []*result{}
-	for _, res := range knownSolutions {
-		resultsToPrint = append(resultsToPrint, res)
-	}
-	rprintSolutions(0, resultsToPrint)
-	log.Println("SUMMARIZED RESULTS:")
-	(&solutionSummarizer{}).updateCombos(resultsToPrint)
-}
-
-func rprintSolutions(level int, results []*result) {
-	for _, res := range results {
-		if level == 0 {
-			log.Println("SOLUTION:")
-		}
-		for _, word := range res.words {
-			lprintf(level+1, "%s\n", word)
-			rprintSolutions(level+2, res.children)
-		}
-	}
-}
-
-type solutionSummarizer struct {
-	wordCombos [][]string
-}
-
-func (s *solutionSummarizer) updateCombos(results []*result) {
-	s.wordCombos = [][]string{}
-	for _, res := range results {
-		s.traverseSolution([]string{}, res)
-	}
-
-	// TODO this is ugly; would be better to find a way to prevent the solver
-	// from returning duplicate results.
-	deduper := map[string]struct{}{}
-
-	for _, combo := range s.wordCombos {
-		sort.Strings(combo)
-		k := fmt.Sprintf("%s", combo)
-		if _, ok := deduper[k]; !ok {
-			deduper[k] = struct{}{}
-			log.Println(k)
-		}
-	}
-}
-
-func (s *solutionSummarizer) traverseSolution(previousWords []string, res *result) {
-	//log.Println("traverseSolution", previousWords, res)
-	for _, word := range res.words {
-		//log.Println("looking at word:", word)
-		newPreviousWords := []string{}
-		newPreviousWords = append(newPreviousWords, previousWords...)
-		newPreviousWords = append(newPreviousWords, word)
-
-		if len(res.children) == 0 {
-			s.wordCombos = append(s.wordCombos, newPreviousWords)
-			continue
-		} else {
-			for _, child := range res.children {
-				s.traverseSolution(newPreviousWords, child)
-			}
-		}
-	}
-}
-
-// FindAll finds all single word groups which can be derived from givenWord
-func (t *WordTree) FindAll(givenWord string) [][]string {
-	wordsOnly := [][]string{}
+// Words finds all single words in the tree which can be made from the letters
+// of givenWord.
+func (t *WordTree) Words(givenWord string) []string {
+	words := []string{}
 	for _, result := range findAll(0, t, []rune(wordHash(givenWord))) {
-		wordsOnly = append(wordsOnly, result.words)
+		words = append(words, result.words...)
 	}
-	return wordsOnly
+	return words
 }
 
 func findAll(level int, cur *WordTree, givenRunes []rune) []*result {
@@ -196,28 +108,39 @@ func findAll(level int, cur *WordTree, givenRunes []rune) []*result {
 	return found
 }
 
-func (t *WordTree) String() string {
-	return t.draw("root", 0)
-}
+// WordCombos returns all combinations of words in the tree which can be
+// created from the letters of givenWord. {word1, word2} is assumed to be
+// equivalent to {word2, word1}.
+func (t *WordTree) WordCombos(givenWord string) [][]string {
+	knownSolutions := map[string]*result{}
+	givenWordHash := wordHash(givenWord)
 
-func (t *WordTree) draw(label string, level int) string {
-	s := lsprintf(level, "%s words: %s\n", label, t.words)
-	for r, child := range t.children {
-		s += child.draw(string(r), level+1)
+	var fillSubresults func(int, string, *result)
+	fillSubresults = func(level int, originalHash string, currentResult *result) {
+		if currentResult.valid == false {
+			return
+		}
+
+		hashDiff := wordHashDiff(originalHash, currentResult.hash)
+
+		if knownSolution, ok := knownSolutions[hashDiff]; ok {
+			currentResult.children = []*result{knownSolution.shallowCopy()}
+		} else {
+			currentResult.children = findAll(level+1, t, []rune(hashDiff))
+		}
+
+		for _, child := range currentResult.children {
+			if _, ok := knownSolutions[child.hash]; !ok {
+				knownSolutions[child.hash] = child.shallowCopy()
+			}
+			fillSubresults(level+1, hashDiff, child)
+		}
 	}
-	return s
-}
 
-func lsprintf(level int, str string, stuff ...interface{}) string {
-	var padding string
-	if level > 0 {
-		padding += strings.Repeat("  ", level)
+	for _, newResult := range findAll(0, t, []rune(givenWordHash)) {
+		knownSolutions[newResult.hash] = newResult
+		fillSubresults(0, givenWordHash, newResult)
 	}
 
-	return fmt.Sprintf(padding+str, stuff...)
-}
-
-func lprintf(level int, str string, stuff ...interface{}) {
-	//return 0, nil
-	log.Printf(lsprintf(level, str, stuff...))
+	return summarize(knownSolutions)
 }

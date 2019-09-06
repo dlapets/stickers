@@ -1,6 +1,8 @@
 package matcher
 
 import (
+	"fmt"
+	"log"
 	"sort"
 	"strings"
 )
@@ -111,4 +113,18 @@ func wordHashDiff(lhs, rhs string) string {
 	res := wordHash(b.String())
 	//fmt.Printf("wordHashDiff: %s - %s = %s\n", lhs, rhs, res)
 	return res
+}
+
+// Helper func for recursive printing: pads left depending on value of level.
+func lsprintf(level int, str string, stuff ...interface{}) string {
+	var padding string
+	if level > 0 {
+		padding += strings.Repeat("  ", level)
+	}
+
+	return fmt.Sprintf(padding+str, stuff...)
+}
+
+func lprintf(level int, str string, stuff ...interface{}) {
+	log.Printf(lsprintf(level, str, stuff...))
 }
