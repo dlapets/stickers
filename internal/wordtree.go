@@ -120,10 +120,6 @@ func (t *WordTree) WordCombos(givenWord string) [][]string {
 
 	var fillSubresults func(int, string, *result)
 	fillSubresults = func(level int, originalHash string, currentResult *result) {
-		if currentResult.valid == false {
-			return
-		}
-
 		hashDiff := wordHashDiff(originalHash, currentResult.hash)
 
 		if knownSolution, ok := knownSolutions[hashDiff]; ok {

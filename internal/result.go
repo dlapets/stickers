@@ -6,18 +6,14 @@ import (
 )
 
 type result struct {
-	valid    bool
 	hash     string
 	words    []string
 	children []*result
 }
 
-var noResult = &result{} // not nil, not valid
-
 func (r *result) String() string {
 	return fmt.Sprintf(
-		"[result valid:%5t, words:%s, hash:%s, children: %s]",
-		r.valid,
+		"[result words:%s, hash:%s, children: %s]",
 		r.words,
 		r.hash,
 		r.children,
@@ -29,7 +25,6 @@ func newResult(words []string) *result {
 		log.Panicf("there's no words on it!")
 	}
 	return &result{
-		valid:    true,
 		hash:     wordHash(words[0]), // TODO don't recalculate hash here
 		words:    words,
 		children: []*result{},
@@ -38,7 +33,6 @@ func newResult(words []string) *result {
 
 func (r *result) shallowCopy() *result {
 	return &result{
-		valid:    r.valid,
 		hash:     r.hash,
 		words:    r.words,
 		children: []*result{}, // doesn't get copied
