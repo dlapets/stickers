@@ -1,10 +1,13 @@
 package internal
 
+// WordTree is a structure for efficiently (?) identifying what words can be
+// formed from the runes of a given string.
 type WordTree struct {
 	children map[rune]*WordTree
 	words    []string
 }
 
+// NewWordTree creates an empty WordTree.
 func NewWordTree() *WordTree {
 	return &WordTree{
 		children: map[rune]*WordTree{},
