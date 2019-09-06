@@ -19,13 +19,13 @@ func main() {
 		log.Panicf("no input")
 	}
 
-	dictionary, err := matcher.LoadDictionary(DictionaryPath)
+	words, err := matcher.LoadWords(DictionaryPath)
 	if err != nil {
 		log.Panicf("failed to read dictionary: %s", err)
 	}
 
 	wordTree := matcher.NewWordTree()
-	for word := range dictionary.Words() {
+	for _, word := range words {
 		wordTree.Add(word)
 	}
 
