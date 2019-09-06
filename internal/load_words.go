@@ -28,3 +28,16 @@ func LoadWords(filename string) ([]string, error) {
 	}
 	return words, nil
 }
+
+// Some words are more equal than others!
+func bullshit(word string) bool {
+	if len(word) == 1 {
+		switch word {
+		case "a", "i":
+			return false
+		default:
+			return true
+		}
+	}
+	return false
+}

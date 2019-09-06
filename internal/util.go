@@ -7,34 +7,21 @@ import (
 	"strings"
 )
 
-// Some words are more equal than others!
-func bullshit(word string) bool {
-	if len(word) == 1 {
-		switch word {
-		case "a", "i":
-			return false
-		default:
-			return true
-		}
-	}
-	return false
-}
-
 func wordHash(word string) string {
 	return wordHashDiff(word, "")
 }
 
-// gets a new word hash; rhs expected to be subset of lhs.
-// TODO this can be more efficient
+// wordHashDiff gets a new word hash from lhs, subtracting any runes present in
+// rhs; rhs expected to be subset of lhs.
 func wordHashDiff(lhs, rhs string) string {
 	runeCounts := wordRuneCounts(lhs)
 
-	// subtract rhs
+	// Subtract rhs from the counts.
 	for _, r := range rhs {
 		runeCounts[r]--
 	}
 
-	// put all the runes in order
+	// Put all the runes in order.
 	runes := []rune{}
 	for r, count := range runeCounts {
 		if count > 0 {
@@ -43,7 +30,7 @@ func wordHashDiff(lhs, rhs string) string {
 	}
 	sort.Slice(runes, func(i, j int) bool { return runes[i] < runes[j] })
 
-	// write to string
+	// Write sorted results to a string.
 	b := strings.Builder{}
 	for _, r := range runes {
 		for i := 0; i < runeCounts[r]; i++ {
