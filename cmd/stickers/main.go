@@ -9,7 +9,7 @@ import (
 	"github.com/dlapets/stickers/internal"
 )
 
-const DictionaryPath = "data/celine.txt"
+const dictionaryPath = "data/celine.txt"
 
 func main() {
 	log.SetOutput(os.Stderr)
@@ -19,7 +19,7 @@ func main() {
 		log.Panicf("no input")
 	}
 
-	words, err := internal.LoadWords(DictionaryPath)
+	words, err := internal.LoadWords(dictionaryPath)
 	if err != nil {
 		log.Panicf("failed to read dictionary: %s", err)
 	}

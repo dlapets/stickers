@@ -36,11 +36,11 @@ func newResult(words []string) *result {
 	}
 }
 
-func (res *result) shallowCopy() *result {
+func (r *result) shallowCopy() *result {
 	return &result{
-		valid:    res.valid,
-		hash:     res.hash,
-		words:    res.words,
+		valid:    r.valid,
+		hash:     r.hash,
+		words:    r.words,
 		children: []*result{}, // doesn't get copied
 	}
 }
