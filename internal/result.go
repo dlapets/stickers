@@ -21,11 +21,15 @@ func (r *result) String() string {
 }
 
 func newResult(words []string) *result {
-	if len(words) == 0 { // TODO get rid of panic
-		log.Panicf("there's no words on it!")
+	var hash string
+	if len(words) > 0 {
+		// TODO try to find a way to avoid recalculating the hash here.
+		hash = wordHash(words[0])
+	} else {
+		log.Printf("creating result from empty word list")
 	}
 	return &result{
-		hash:     wordHash(words[0]), // TODO don't recalculate hash here
+		hash:     hash,
 		words:    words,
 		children: []*result{},
 	}
