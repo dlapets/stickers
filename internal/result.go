@@ -11,12 +11,12 @@ type result struct {
 	children []*result
 }
 
-func (r *result) String() string {
+func (res *result) String() string {
 	return fmt.Sprintf(
 		"[result words:%s, hash:%s, children: %s]",
-		r.words,
-		r.hash,
-		r.children,
+		res.words,
+		res.hash,
+		res.children,
 	)
 }
 
@@ -35,10 +35,10 @@ func newResult(words []string) *result {
 	}
 }
 
-func (r *result) shallowCopy() *result {
+func (res *result) shallowCopy() *result {
 	return &result{
-		hash:     r.hash,
-		words:    r.words,
+		hash:     res.hash,
+		words:    res.words,
 		children: []*result{}, // doesn't get copied
 	}
 }
