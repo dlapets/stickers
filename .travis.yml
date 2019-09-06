@@ -1,6 +1,10 @@
 language: go
 go:
-  - master
+  - 1.12
 
 install:
- - go get github.com/stretchr/testify
+  - go get -u golang.org/x/lint/golint
+
+script:
+  - go test ./...
+  - golint ./... | grep -v ^vendor && return 1 || return 0
