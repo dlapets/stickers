@@ -9,6 +9,7 @@ import (
 	"github.com/dlapets/stickers/internal"
 )
 
+// TODO Move this somewhere or tweak it on install.
 const dictionaryPath = "data/celine.txt"
 
 func main() {
@@ -29,6 +30,7 @@ func main() {
 		wordTree.Add(word)
 	}
 
+	// TODO Allow getting individual words instead of combos.
 	if results := wordTree.WordCombos(target); len(results) != 0 {
 		for _, result := range results {
 			fmt.Println(result)
