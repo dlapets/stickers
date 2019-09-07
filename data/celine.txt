@@ -89,7 +89,6 @@ accuse
 accused
 accusing
 accustomed
-acheres
 achieve
 achievement
 achievements
@@ -293,12 +292,9 @@ alarm
 alarmed
 alarming
 alarms
-alarums
 alaska
 alaskan
 albumen
-alcide
-alcides
 alcohol
 alcoholic
 alcoholics
@@ -599,7 +595,6 @@ askew
 asking
 asks
 asleep
-asnieres
 aspect
 aspects
 asphalt
@@ -607,7 +602,6 @@ asphyxiated
 asphyxiating
 asphyxiation
 aspired
-asplash
 ass
 assailed
 assailing
@@ -742,7 +736,6 @@ awning
 ax
 axis
 axles
-ayel
 aztecs
 babas
 babble
@@ -1953,7 +1946,6 @@ chunks
 church
 churches
 churning
-cid
 cids
 cigar
 cigarette
@@ -2892,7 +2884,6 @@ daze
 dazed
 dazzled
 dazzling
-de
 dead
 deadheads
 deadly
@@ -2997,7 +2988,6 @@ deign
 deigned
 deigns
 dejected
-del
 delay
 delayed
 delectable
@@ -3073,7 +3063,6 @@ derived
 dermis
 deroulede
 derringdo
-des
 descended
 descending
 descends
@@ -3568,7 +3557,6 @@ drunker
 drunks
 dry
 drying
-du
 dubious
 dubiously
 duchess
@@ -3577,7 +3565,6 @@ ducks
 dud
 due
 duels
-duf
 dug
 dull
 dullest
@@ -3681,14 +3668,12 @@ eggs
 ego
 egoism
 egypt
-eh
 eiffel
 eight
 eighteen
 eighty
 either
 ejected
-el
 elaborate
 elaborately
 elapse
@@ -3725,7 +3710,6 @@ elses
 elsewhere
 elude
 eluded
-em
 emaciated
 emanate
 emanates
@@ -3946,7 +3930,6 @@ estimable
 estimated
 estimates
 estuaries
-et
 etc
 etched
 eternal
@@ -5382,7 +5365,6 @@ hecatombs
 hed
 hedge
 hedges
-hee
 heel
 heelest
 heels
@@ -5970,7 +5952,6 @@ innumerable
 inoffensive
 inquired
 inquiries
-ins
 insane
 insanely
 insanity
@@ -6367,7 +6348,6 @@ known
 knows
 knucklebones
 knuckleheaded
-la
 labbe
 labor
 laboratories
@@ -6478,7 +6458,6 @@ laying
 laymen
 layout
 laziness
-le
 lead
 leaden
 leading
@@ -6534,7 +6513,6 @@ leons
 leopards
 lepers
 lepic
-les
 less
 lesson
 lessons
@@ -6789,7 +6767,6 @@ lycee
 lying
 lyrical
 lyricism
-lys
 mabillia
 macaulays
 machete
@@ -6985,7 +6962,6 @@ maybe
 mayflower
 mayor
 mayors
-md
 me
 meadow
 meager
@@ -7354,8 +7330,6 @@ movie
 movies
 moving
 mow
-mp
-mps
 mr
 much
 muck
@@ -7651,7 +7625,6 @@ nursing
 nut
 nuthouse
 nuts
-o
 oaks
 oar
 oars
@@ -7838,7 +7811,6 @@ ostentation
 other
 others
 otherwise
-ou
 ouen
 ought
 oughtnt
@@ -9642,7 +9614,6 @@ rows
 royal
 royale
 royally
-rs
 rub
 rubber
 rubbing
@@ -9750,7 +9721,6 @@ salutes
 salvation
 sambanet
 same
-san
 sanatorium
 sand
 sandalwood
@@ -11312,7 +11282,6 @@ swooped
 swordfish
 swore
 sworn
-sy
 sylvan
 symbolic
 symbols
@@ -11326,8 +11295,6 @@ syphilitic
 syrup
 system
 systems
-t
-ta
 tabernacle
 table
 tablecloth
@@ -11404,8 +11371,6 @@ tax
 taxes
 taxi
 taxpayer
-tbe
-tc
 tea
 teach
 teacher
@@ -11999,7 +11964,6 @@ ultrameticulous
 ultrasuper
 umbrella
 umbrellacarrying
-un
 unable
 unaccustomed
 unadulterated
@@ -12238,7 +12202,6 @@ vaguely
 vagueness
 vaguest
 vain
-val
 valde
 valentines
 valerian
@@ -12852,8 +12815,6 @@ written
 wrong
 wrote
 wrung
-xiv
-xv
 yacht
 yap
 yapping
@@ -12861,7 +12822,6 @@ yard
 yards
 yarns
 yawning
-yd
 yeah
 year
 years
