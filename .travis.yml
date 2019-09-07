@@ -6,5 +6,4 @@ install:
   - go get -u golang.org/x/lint/golint
 
 script:
-  - go test ./...
-  - golint ./... | grep -v ^vendor && return 1 || return 0
+  - make test
