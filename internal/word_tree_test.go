@@ -39,6 +39,20 @@ func TestWordTree_Words(t *testing.T) {
 	}
 }
 
+func TestWordTree_Words_Simple(t *testing.T) {
+	tree := internal.NewWordTree()
+	tree.Add("hello")
+	tree.Add("help")
+
+	expected := []string{"help"}
+	got := tree.Words("a helper")
+
+	require.Equal(t, len(expected), len(got))
+	for _, word := range expected {
+		require.Contains(t, got, word)
+	}
+}
+
 func TestWordTree_WordCombos(t *testing.T) {
 	tree := internal.NewWordTree()
 	tree.Add("shit")
