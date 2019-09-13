@@ -5,17 +5,17 @@ import (
 	"sort"
 )
 
-func summarize(results map[string]*result) [][]string {
-	return (&summarizer{}).updateCombos(results)
+func summarize(result *result) [][]string {
+	return (&summarizer{}).updateCombos(result)
 }
 
 type summarizer struct {
 	wordCombos [][]string
 }
 
-func (s *summarizer) updateCombos(results map[string]*result) [][]string {
+func (s *summarizer) updateCombos(result *result) [][]string {
 	s.wordCombos = [][]string{}
-	for _, res := range results {
+	for _, res := range result.children {
 		s.traverseResult([]string{}, res)
 	}
 

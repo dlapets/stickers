@@ -1,6 +1,8 @@
 package internal
 
-import "log"
+import (
+	"log"
+)
 
 // WordTree is a structure for efficiently (?) identifying what words can be
 // formed from the runes of a given string.
@@ -117,37 +119,18 @@ func findAll(level int, cur *WordTree, givenRunes []rune) []*result {
 // created from the letters of givenWord. {word1, word2} is assumed to be
 // equivalent to {word2, word1}.
 func (t *WordTree) WordCombos(givenWord string) [][]string {
-	knownSolutions := map[string]*result{}
 	hash := wordHash(givenWord)
 
-	knownSolutions[hash] = newResult(nil)
-	knownSolutions[hash].hash = hash
+	result := newResult(nil)
+	result.hash = hash
+	t.fillSubresults(0, hash, result)
 
-	t.fillSubresults(0, hash, knownSolutions[hash], knownSolutions)
-
-	return summarize(knownSolutions)
+	return summarize(result)
 }
 
-func (t *WordTree) fillSubresults(
-	level int,
-	hash string,
-	currentResult *result,
-	knownSolutions map[string]*result,
-) {
-	if knownSolution, ok := knownSolutions[hash]; ok {
-		// This has already been solved..., nothing to do:
-		if len(knownSolution.children) > 0 {
-			currentResult.children = knownSolution.children
-			return
-		}
-	}
-
-	currentResult.children = findAll(level+1, t, []rune(hash))
-
-	for _, child := range currentResult.children {
-		if _, ok := knownSolutions[child.hash]; !ok {
-			knownSolutions[child.hash] = child
-		}
-		t.fillSubresults(level+1, wordHashDiff(hash, child.hash), child, knownSolutions)
+func (t *WordTree) fillSubresults(level int, hash string, currentResult *result) {
+	for _, child := range findAll(level+1, t, []rune(hash)) {
+		t.fillSubresults(level+1, wordHashDiff(hash, child.hash), child)
+		currentResult.children = append(currentResult.children, child)
 	}
 }
